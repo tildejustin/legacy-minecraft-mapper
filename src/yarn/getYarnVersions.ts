@@ -1,4 +1,4 @@
-import {YARN_VERSION_ENDPOINT} from "./config.js";
+import {YARN_VERSION_ENDPOINT} from "../config.js";
 import YarnVersions from "./YarnVersions.js";
 import {YarnVersionsJson} from "./YarnVersionsJson";
 

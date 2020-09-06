@@ -1,12 +1,18 @@
-import {YarnVersionJson} from "./YarnVersionsJson.js";
-import {YARN_JAR_URL} from "./config.js";
-import error from "./error.js";
+import {YarnVersionJson} from "../yarn/YarnVersionsJson.js";
+import {YARN_JAR_URL} from "../config.js";
+import error from "../utils/error.js";
 import type JSZipType from "jszip";
-import parseMappings from "./parseMappings.js";
+import parseMappings, {Mappings} from "./parseMappings.js";
 
 declare const JSZip: JSZipType;
 
-async function downloadMappings(version: YarnVersionJson, statusCallback: (status: string) => void) {
+// Enrich Mappings type with source info
+export type DownloadedMappings = {
+    yarnVersion: string;
+    url: string;
+} & Mappings;
+
+async function downloadMappings(version: YarnVersionJson, statusCallback: (status: string) => void): Promise<DownloadedMappings> {
 
     const yarnVersion = version.gameVersion + version.separator + version.build;
     const url = `${YARN_JAR_URL}/${yarnVersion}/yarn-${yarnVersion}-v2.jar`;
@@ -37,13 +43,11 @@ async function downloadMappings(version: YarnVersionJson, statusCallback: (statu
 
     const mappings = parseMappings(mappingFileContent);
 
-    console.log(
-        'Loaded mappings. Classes: ', mappings.classes.size,
-        'Methods: ', mappings.methods.size,
-        'Fields: ', mappings.fields.size
-    )
-
-    return mappings;
+    return {
+        yarnVersion,
+        url,
+        ...mappings
+    };
 
 }
 
