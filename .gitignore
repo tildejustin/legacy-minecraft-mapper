@@ -1,5 +1,4 @@
+.idea
 
-log
-server/mappings/
-server/node_modules/
-mappings/
+site/*.js
+node_modules

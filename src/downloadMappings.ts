@@ -1,0 +1,50 @@
+import {YarnVersionJson} from "./YarnVersionsJson.js";
+import {YARN_JAR_URL} from "./config.js";
+import error from "./error.js";
+import type JSZipType from "jszip";
+import parseMappings from "./parseMappings.js";
+
+declare const JSZip: JSZipType;
+
+async function downloadMappings(version: YarnVersionJson, statusCallback: (status: string) => void) {
+
+    const yarnVersion = version.gameVersion + version.separator + version.build;
+    const url = `${YARN_JAR_URL}/${yarnVersion}/yarn-${yarnVersion}-v2.jar`;
+
+    statusCallback(`Requesting ${url}...`);
+
+    const response = await fetch(url);
+
+    if (!response.ok || !response.body) {
+        console.error("Failed to download Yarn mappings: ", response);
+        error("Failed to download Yarn mappings from " + url);
+    }
+
+    statusCallback(`Downloading ${url}...`);
+
+    const jarContent = await response.arrayBuffer();
+
+    statusCallback(`Downloaded ${jarContent.byteLength} bytes. Reading ZIP-file...`);
+
+    const zip = await new JSZip().loadAsync(jarContent);
+
+    const mappingsZipEntry = zip.file("mappings/mappings.tiny")
+    if (!mappingsZipEntry) {
+        error("Downloaded mappings file is missing mappings.tiny");
+    }
+
+    const mappingFileContent: string = await mappingsZipEntry.async("string");
+
+    const mappings = parseMappings(mappingFileContent);
+
+    console.log(
+        'Loaded mappings. Classes: ', mappings.classes.size,
+        'Methods: ', mappings.methods.size,
+        'Fields: ', mappings.fields.size
+    )
+
+    return mappings;
+
+}
+
+export default downloadMappings;
