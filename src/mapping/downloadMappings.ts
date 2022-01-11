@@ -15,11 +15,11 @@ export type DownloadedMappings = {
 async function downloadMappings(version: YarnVersionJson, statusCallback: (status: string) => void): Promise<DownloadedMappings> {
 
     const yarnVersion = version.gameVersion + version.separator + version.build;
-    const url = `https://logwet-cors-proxy.herokuapp.com/${YARN_JAR_URL}/${yarnVersion}/yarn-${yarnVersion}-v2.jar`;
+    const url = `${YARN_JAR_URL}/${yarnVersion}/yarn-${yarnVersion}-v2.jar`;
 
     statusCallback(`Requesting ${url}...`);
 
-    const response = await fetch(url);
+    const response = await fetch(`https://logwet-cors-proxy.herokuapp.com/${url}`);
 
     if (!response.ok || !response.body) {
         console.error("Failed to download Yarn mappings: ", response);
