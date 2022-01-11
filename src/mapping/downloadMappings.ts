@@ -19,7 +19,7 @@ async function downloadMappings(version: YarnVersionJson, statusCallback: (statu
 
     statusCallback(`Requesting ${url}...`);
 
-    const response = await fetch(url);
+    const response = await fetch(url, { mode: 'no-cors'});
 
     if (!response.ok || !response.body) {
         console.error("Failed to download Yarn mappings: ", response);
