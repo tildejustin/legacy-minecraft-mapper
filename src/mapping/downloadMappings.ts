@@ -19,8 +19,8 @@ async function downloadMappings(version: YarnVersionJson, statusCallback: (statu
 
     statusCallback(`Requesting ${url}...`);
 
-    const response = await fetch(`https://logwet-cors-proxy.herokuapp.com/${url}`);
-
+    const response = await fetch(url);
+                
     if (!response.ok || !response.body) {
         console.error("Failed to download Yarn mappings: ", response);
         error("Failed to download Yarn mappings from " + url);
